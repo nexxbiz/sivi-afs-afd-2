@@ -10,13 +10,13 @@ This set of methods is designed to validate certain aspects of data structures, 
 
 Before diving into the validation methods, let's understand the `validationResults` structure. This object is used to store and return validation results from the validation methods.
 
-\```javascript
+```javascript
 const validationResults = {
     passed: true,
     errors: [],
     errorCount: 0,
 };
-\```
+```
 
 - `passed`: A boolean indicating whether the validation passed without errors.
 - `errors`: An array of error objects, each detailing a specific validation error.
@@ -39,7 +39,7 @@ This method focuses on the validation of the `refKey` property within arrays in 
 
 **Example**:
 
-\```javascript
+```javascript
 const data = {
     items: [
         { refKey: "A", name: "Item A" },
@@ -50,7 +50,7 @@ const data = {
 };
 
 validateAfdRefKey(data, validationResults);
-\```
+```
 
 The above example will report errors for the missing `refKey` and the duplicate `refKey`.
 
@@ -69,7 +69,7 @@ An array of values found at the specified path.
 
 **Example**:
 
-\```javascript
+```javascript
 const data = {
     group: {
         items: [{ refKey: "A" }, { refKey: "B" }]
@@ -78,7 +78,7 @@ const data = {
 
 const values = getValueFromPath(data, "group.items");
 console.log(values);  // Outputs: [{ refKey: "A" }, { refKey: "B" }]
-\```
+```
 
 ---
 
@@ -94,7 +94,7 @@ This method is designed to validate references between two paths in a data struc
 
 **Example**:
 
-\```javascript
+```javascript
 const data = {
     users: [
         { refKey: "U1", name: "John", groupRef: ["G1"] },
@@ -107,7 +107,7 @@ const data = {
 };
 
 validateAfdReferences(data, "users", "groups", validationResults);
-\```
+```
 
 The above example will report an error because the user "Jane" has a reference to a non-existent group "G3".
 
