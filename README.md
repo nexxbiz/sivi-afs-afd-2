@@ -155,5 +155,35 @@ The `transformAfdMasterAgreementToPolicySuperStructure` function transforms a so
 - **Object**: The transformed source object with policies and parties (if any) at the root level.
 ---
 
+## `revertPolicySuperStructureToAfdMasterAgreement` Function
 
+The `revertPolicySuperStructureToAfdMasterAgreement` function reverts the changes made by transforming a source object into a policy superstructure. It moves the policies and parties from the root level back to their respective master agreements.
+
+### Parameters
+
+- **source** (Object): The source object containing policies and master agreements at the root level.
+
+### Steps:
+
+1. **Initial Checks**: The function first checks if the `policy` and `masterAgreement` properties exist in the source. If not, it logs an error and returns the source object without modifications.
+2. **Create Master Agreement Map**: A map is created for quick lookup of master agreements using their `refKey`.
+3. **Re-associate Policies**: Each policy at the root level is moved back to its associated master agreement based on the `masterAgreementRef`. The reference (`masterAgreementRef`) is then removed from the policy.
+4. **Clean Up**: The `policy` property at the root is deleted after all policies have been moved. Additionally, the `policyRef` property in each master agreement is removed.
+5. **Re-associate Parties**: If there are parties at the root level, they are associated with all master agreements (assuming they belong to all). The `party` property at the root is then deleted.
+
+### Returns:
+
+- **Object**: The reverted source object with policies and parties (if any) re-associated with their respective master agreements.
+
+### Example Usage:
+
+```javascript
+const source = {
+    policy: [...],
+    masterAgreement: [...],
+    party: [...]
+};
+
+const revertedSource = revertPolicySuperStructureToAfdMasterAgreement(source);
+```
 ---
