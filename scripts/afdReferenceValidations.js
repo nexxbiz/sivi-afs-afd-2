@@ -112,6 +112,4 @@ function validateAfdReferences(data, fromPath, toPath, validationResults) {
             });
         }
     });
-
-    return validationResults;
 }
