@@ -1,4 +1,4 @@
-//Generated using ChatGPT 4 Code Inspector
+//Generated and improved with help of ChatGPT 4 Code Inspector
 function revertPolicySuperStructureToAfdMasterAgreement(source) {
     if (!source.policy || !source.masterAgreement) {
         console.error("Missing required properties for transformation.");
