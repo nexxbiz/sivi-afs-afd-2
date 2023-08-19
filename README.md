@@ -96,17 +96,17 @@ This method is designed to validate references between two paths in a data struc
 
 ```javascript
 const data = {
-    users: [
+    user: [
         { refKey: "U1", name: "John", groupRef: ["G1"] },
         { refKey: "U2", name: "Jane", groupRef: ["G2", "G3"] }
     ],
-    groups: [
+    group: [
         { refKey: "G1", name: "Admins" },
         { refKey: "G2", name: "Users" }
     ]
 };
 
-validateAfdReferences(data, "users", "groups", validationResults);
+validateAfdReferences(data, "user", "group", validationResults);
 ```
 
 The above example will report an error because the user "Jane" has a reference to a non-existent group "G3".
@@ -114,3 +114,4 @@ The above example will report an error because the user "Jane" has a reference t
 ---
 
 These methods together form a robust system for validating and ensuring the integrity of nested data structures with `refKey` references.
+The referencing key property must conform with the logic ```{object-name}Ref```. E.g., ```group``` reference in ```user```, will be ```groupRef```.
