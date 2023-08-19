@@ -17,6 +17,8 @@ https://www.sivi.org/standaarden/sivi-all-finance-standaard/
 ### Overview of this project
 This set of methods is designed to validate certain aspects of data structures, specifically focusing on verifying the presence, uniqueness, and validity of `refKey` references. These references are common in nested data structures, where entities refer to others by a unique identifier.
 
+[SIVI AFD2.0 Unique Identifiers & Referals](https://www.manula.com/manuals/sivi/sivi-all-finance-standard/1/en/topic/unique-identifiers)
+
 ---
 
 ### Validation Results Structure
