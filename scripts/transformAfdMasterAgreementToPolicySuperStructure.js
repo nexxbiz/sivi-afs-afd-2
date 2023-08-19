@@ -1,4 +1,4 @@
-
+//Generated using ChatGPT 4 Code Inspector
 function transformAfdMasterAgreementToPolicySuperStructure(source) {
     // Step 1 & 2: Extract policies from masterAgreement and move to root
     let extractedPolicies = [];
