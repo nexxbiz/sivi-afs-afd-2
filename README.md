@@ -1,12 +1,25 @@
-## Documentation
+# Documentation
 
-### **Overview**
+## SIVI All Finance Standard
 
+SIVI AFS is the foundation for a digital ecosystem where customers can receive good service within the various distribution forms. It ensures good access to data and enables data exchange. Moreover, it facilitates digital collaboration with room for individual differences. This is an ambitious goal and will require attention and effort from the industry in the coming years. Simultaneously, it's a necessary agenda because an open digital ecosystem within our industry is a prerequisite for further development and innovation.
+
+The aim of the SIVI All Finance Standard is to support digital business within financial services broadly. In this context, SIVI identifies three perspectives:
+
+- **Data exchange**
+- **Data registration**
+- **Development of services**
+
+All data-related agreements are documented in the All Finance Data Catalog (AFD). All agreements related to functions and processes are documented within the All Finance API framework (AFA).
+
+https://www.sivi.org/standaarden/sivi-all-finance-standaard/
+
+### Overview of this project
 This set of methods is designed to validate certain aspects of data structures, specifically focusing on verifying the presence, uniqueness, and validity of `refKey` references. These references are common in nested data structures, where entities refer to others by a unique identifier.
 
 ---
 
-### **Validation Results Structure**
+### Validation Results Structure
 
 Before diving into the validation methods, let's understand the `validationResults` structure. This object is used to store and return validation results from the validation methods.
 
@@ -24,7 +37,7 @@ const validationResults = {
 
 ---
 
-### **`validateAfdRefKey(obj, validationResults, path='')`**
+### `validateAfdRefKey(obj, validationResults, path='')`
 
 This method focuses on the validation of the `refKey` property within arrays in an object. It ensures:
 
@@ -56,7 +69,7 @@ The above example will report errors for the missing `refKey` and the duplicate 
 
 ---
 
-### **`getValueFromPath(data, path)`**
+### `getValueFromPath(data, path)`
 
 This utility method is used to retrieve values from a specified path within an object. It's especially useful when the path traverses both object properties and array indices.
 
@@ -82,7 +95,7 @@ console.log(values);  // Outputs: [{ refKey: "A" }, { refKey: "B" }]
 
 ---
 
-### **`validateAfdReferences(data, fromPath, toPath, validationResults)`**
+### `validateAfdReferences(data, fromPath, toPath, validationResults)`
 
 This method is designed to validate references between two paths in a data structure. It ensures that every reference in the source path exists in the target path's `refKeys`.
 
