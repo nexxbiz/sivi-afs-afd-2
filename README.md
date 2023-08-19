@@ -130,3 +130,30 @@ The above example will report an error because the user "Jane" has a reference t
 
 These methods together form a robust system for validating and ensuring the integrity of nested data structures with `refKey` references.
 The referencing key property must conform with the logic ```{object-name}Ref```. E.g., ```group``` reference in ```user```, will be ```groupRef```.
+
+---
+
+## `transformAfdMasterAgreementToPolicySuperStructure` Function
+
+The `transformAfdMasterAgreementToPolicySuperStructure` function transforms a source object that contains master agreements into a super structure where policies are moved to the root of the source object.
+
+### Parameters
+
+- **source** (Object): The source object containing master agreements and other properties.
+
+### Steps:
+
+1. **Extract Policies from masterAgreement**: For each master agreement within the source, the associated policies are extracted.
+2. **Move Policies to Root**: The extracted policies are then moved to the root of the source object.
+3. **Add masterAgreementRef**: A reference to the master agreement (using its `refKey`) is added to each policy.
+4. **Generate policyRef for masterAgreement**: For each master agreement, a `policyRef` property is generated, containing references to its associated policies.
+5. **Remove Policy from masterAgreement**: After moving policies to the root, the `policy` property is removed from each master agreement.
+6. **Extract and Move Parties**: If a master agreement has associated parties, these are extracted and moved to the root. If parties already exist at the root, the extracted parties are concatenated to them.
+
+### Returns:
+
+- **Object**: The transformed source object with policies and parties (if any) at the root level.
+---
+
+
+---
