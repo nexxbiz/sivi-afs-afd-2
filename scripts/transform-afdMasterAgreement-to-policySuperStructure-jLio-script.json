@@ -1,0 +1,27 @@
+[
+  {
+    "path": "$.source.masterAgreement[*].policy[*].masterAgreementRef",
+    "value": [],
+    "command": "set"
+  },
+  {
+    "fromPath": "$.source.masterAgreement[*].refKey",
+    "toPath": "$.source.masterAgreement[*].policy[*].masterAgreementRef",
+    "command": "copy"
+  },
+  {
+    "fromPath": "$.source.masterAgreement[*].policy[*].refKey",
+    "toPath": "$.source.masterAgreement[*].policyRef",
+    "command": "copy"
+  },
+  {
+    "fromPath": "$.source.masterAgreement[*].policy",
+    "toPath": "$.source.policy",
+    "command": "move"
+  },
+  {
+    "fromPath": "$.source.masterAgreement[*].party",
+    "toPath": "$.source.party",
+    "command": "move"
+  }
+]
