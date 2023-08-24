@@ -27,15 +27,11 @@ Before diving into the validation methods, let's understand the `validationResul
 
 ```javascript
 const validationResults = {
-    passed: true,
-    errors: [],
-    errorCount: 0,
+    errors: []
 };
 ```
 
-- `passed`: A boolean indicating whether the validation passed without errors.
 - `errors`: An array of error objects, each detailing a specific validation error.
-- `errorCount`: A count of the total errors encountered.
 
 ---
 
@@ -186,4 +182,24 @@ const source = {
 
 const revertedSource = revertPolicySuperStructureToAfdMasterAgreement(source);
 ```
+
+## `transform-afdMasterAgreement-to-policySuperStructure-jLio-script` JLio Script
+
+The `transform-afdMasterAgreement-to-policySuperStructure-jLio-script` transforms a source json object that contains master agreements into a super structure where policies are moved to the root of the source object.
+
+### Parameters
+
+- **source** (Object): The source object containing master agreements and other properties.
+
+### Steps:
+
+1. **Set masterAgreementRef in every policy within it**: For each policy master agreement within the source, a new field masterAgreementRef is set to [] in the associated policies .
+2. **Copy refKey of masterAgreement to masterAgreementRef of policies**: The value of the corresponding masterAgreemnt is copid in the masterAgreementRef of the policies.
+3. **Copy policies refKey to policyRef of masterAgreement**: For each master agreement, a `policyRef` property is generated, containing references to its associated policies.
+4. **Move Policies from masterAgreement**: The policies are moved from masterAgreement to the root.
+5. **Move Parties from masterAgreement**: The parties are moved from masterAgreement to the root.
+
+### Returns:
+
+- **Object**: The transformed source object with policies and parties (if any) at the root level.
 ---
