@@ -1,8 +1,6 @@
 //Generated and improved with help of ChatGPT 4 Code Inspector
 const validationResults = {
-    passed: true,
-    errors: [],
-    errorCount: 0,
+    errors: []
 };
 
 
@@ -17,30 +15,24 @@ function validateAfdRefKey(obj, validationResults, path='') {
             
             if (anyRefKeyPresent) {
                 if (!item.hasOwnProperty('refKey')) {
-                    validationResults.passed = false;
                     validationResults.errors.push({
                         path: currentPath,
                         message: 'refKey property is missing',
                         method: 'refKeyMissing',
                     });
-                    validationResults.errorCount++;
                 } else if (item.refKey === '') {
-                    validationResults.passed = false;
                     validationResults.errors.push({
                         path: currentPath,
                         message: 'refKey cannot be empty',
                         method: 'refKeyNotEmpty',
                     });
-                    validationResults.errorCount++;
                 } else if (refKeyMap.has(item.refKey)) {
                     const conflictingPath = refKeyMap.get(item.refKey);
-                    validationResults.passed = false;
                     validationResults.errors.push({
                         path: currentPath,
                         message: `refKey must be unique within the array. Conflicts with ${conflictingPath}`,
                         method: 'uniqueRefKey',
                     });
-                    validationResults.errorCount++;
                 } else {
                     refKeyMap.set(item.refKey, currentPath);
                 }
@@ -101,13 +93,11 @@ function validateAfdReferences(data, fromPath, toPath, validationResults) {
         if (item[refProperty]) {
             item[refProperty].forEach(ref => {
                 if (!targetRefKeys.has(ref)) {
-                    validationResults.passed = false;
                     validationResults.errors.push({
                         path: `${fromPath}[${i}].${refProperty}`,
                         message: `Reference ${ref} not found in ${toPath} refKeys`,
                         method: 'missingRef'
                     });
-                    validationResults.errorCount++;
                 }
             });
         }
