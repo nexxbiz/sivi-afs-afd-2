@@ -1,27 +1,27 @@
 [
   {
-    "path": "$.policyRequest.masterAgreement[*].policy[*].masterAgreementRef",
+    "path": "$.source.masterAgreement[*].policy[*].masterAgreementRef",
     "value": [],
     "command": "set"
   },
   {
-    "fromPath": "$.policyRequest.masterAgreement[*].refKey",
-    "toPath": "$.policyRequest.masterAgreement[*].policy[*].masterAgreementRef",
+    "fromPath": "$.source.masterAgreement[*].refKey",
+    "toPath": "$.source.masterAgreement[*].policy[*].masterAgreementRef",
     "command": "copy"
   },
   {
-    "fromPath": "$.policyRequest.masterAgreement[*].policy[*].refKey",
-    "toPath": "$.policyRequest.masterAgreement[*].policyRef",
+    "fromPath": "$.source.masterAgreement[*].policy[*].refKey",
+    "toPath": "$.source.masterAgreement[*].policyRef",
     "command": "copy"
   },
   {
-    "fromPath": "$.policyRequest.masterAgreement[*].policy",
-    "toPath": "$.policyRequest.policy",
+    "fromPath": "$.source.masterAgreement[*].policy",
+    "toPath": "$.source.policy",
     "command": "move"
   },
   {
-    "fromPath": "$.policyRequest.masterAgreement[*].party",
-    "toPath": "$.policyRequest.party",
+    "fromPath": "$.source.masterAgreement[*].party",
+    "toPath": "$.source.party",
     "command": "move"
   }
 ]
