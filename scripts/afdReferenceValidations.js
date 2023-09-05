@@ -133,19 +133,25 @@ function validateProcessingCodeAndInternalReferenceNumber(obj, validationResults
     }
 }
 
-function validateObjectsInArrayOnly(obj, validationResults, path='') {
-    if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
-        validationResults.errors.push({
-            path: path,
-            message: 'Objects must be contained within an array.',
-            method: 'validateObjectsInArrayOnly',
-        });
-    }
+function validateObjectsInArrayOnly(obj, validationResults, path='', parentIsArray=false) {
+    if (typeof obj === 'object' && obj !== null) {
+        const isCurrentArray = Array.isArray(obj);
 
-    if (Array.isArray(obj)) {
-        obj.forEach((item, i) => {
-            validateObjectsInArrayOnly(item, validationResults, `${path}[${i}]`);
-        });
+        // If it's an object and not inside an array and not the root, add an error
+        if (!isCurrentArray && !parentIsArray && path) {
+            validationResults.errors.push({
+                path: path,
+                message: 'Objects must be contained within an array.',
+                method: 'validateObjectsInArrayOnly',
+            });
+        }
+
+        // Iterate through properties of the object
+        for (const key in obj) {
+            const currentPath = path ? `${path}.${key}` : key;
+            validateObjectsInArrayOnly(obj[key], validationResults, currentPath, isCurrentArray);
+        }
     }
 }
+
 
