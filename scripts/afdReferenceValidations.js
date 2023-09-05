@@ -103,3 +103,49 @@ function validateAfdReferences(data, fromPath, toPath, validationResults) {
         }
     });
 }
+
+
+
+
+function validateProcessingCodeAndInternalReferenceNumber(obj, validationResults, path='') {
+    if (typeof obj === 'object' && obj !== null) {
+        if (obj.hasOwnProperty('processingCode')) {
+            const validCodes = ["0", "1", "2", "3", "4"];
+            if (validCodes.includes(obj.processingCode) && obj.processingCode !== "0") {
+                if (!obj.hasOwnProperty('internalReferenceNumber') || obj.internalReferenceNumber === '' || obj.internalReferenceNumber === null) {
+                    validationResults.errors.push({
+                        path: path,
+                        message: 'For processingCode other than "0", internalReferenceNumber must be present and valid.',
+                        method: 'validateProcessingCodeAndInternalReferenceNumber',
+                    });
+                }
+            }
+        }
+
+        // Continue checking child properties
+        for (const key in obj) {
+            validateProcessingCodeAndInternalReferenceNumber(obj[key], validationResults, `${path}.${key}`);
+        }
+    } else if (Array.isArray(obj)) {
+        obj.forEach((item, i) => {
+            validateProcessingCodeAndInternalReferenceNumber(item, validationResults, `${path}[${i}]`);
+        });
+    }
+}
+
+function validateObjectsInArrayOnly(obj, validationResults, path='') {
+    if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
+        validationResults.errors.push({
+            path: path,
+            message: 'Objects must be contained within an array.',
+            method: 'validateObjectsInArrayOnly',
+        });
+    }
+
+    if (Array.isArray(obj)) {
+        obj.forEach((item, i) => {
+            validateObjectsInArrayOnly(item, validationResults, `${path}[${i}]`);
+        });
+    }
+}
+
