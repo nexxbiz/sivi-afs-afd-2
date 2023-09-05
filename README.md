@@ -65,6 +65,7 @@ validateAfdRefKey(data, validationResults);
 
 The above example will report errors for the missing `refKey` and the duplicate `refKey`.
 
+
 ---
 
 ### `getValueFromPath(data, path)`
@@ -126,6 +127,72 @@ The above example will report an error because the user "Jane" has a reference t
 
 These methods together form a robust system for validating and ensuring the integrity of nested data structures with `refKey` references.
 The referencing key property must conform with the logic ```{object-name}Ref```. E.g., ```group``` reference in ```user```, will be ```groupRef```.
+
+
+---
+
+
+### `validateProcessingCodeAndInternalReferenceNumber(obj, validationResults, path='')`
+
+This function validates the `processingCode` and `internalReferenceNumber` properties of objects within the given `obj`.
+
+#### Parameters:
+
+- `obj`: The object to validate.
+- `validationResults`: The results object where errors will be appended. This should be an object with an `errors` array property.
+- `path` (optional): A string representing the current path within the object. This is mainly for internal use and typically starts empty.
+
+#### Description:
+
+For each object within `obj`, if the `processingCode` property is present and its value is one of ["1", "2", "3", "4"], then the object must also have an `internalReferenceNumber` property with a valid value (not empty, not null).
+
+Any validation issues found will be appended to the `errors` array within the `validationResults` object.
+
+
+### `validateObjectsInArrayOnly(obj, validationResults, path='')`
+
+This function ensures that all objects within the given `obj` are contained within arrays.
+
+#### Parameters:
+
+- `obj`: The object to validate.
+- `validationResults`: The results object where errors will be appended. This should be an object with an `errors` array property.
+- `path` (optional): A string representing the current path within the object. This is mainly for internal use and typically starts empty.
+
+#### Description:
+
+For each property within `obj`, if the property's value is an object (and not an array), then a validation error is appended to the `errors` array within the `validationResults` object. This enforces the rule that individual objects must be contained within arrays.
+
+
+### Usage Example:
+
+```javascript
+const dataToValidate = {
+    someArray: [
+        {
+            processingCode: "1",
+            internalReferenceNumber: "12345"
+        },
+        {
+            processingCode: "2"
+            // Missing internalReferenceNumber
+        }
+    ],
+    someObject: {}  // This will trigger a validation error
+};
+
+const validationResults = {
+    errors: []
+};
+
+validateProcessingCodeAndInternalReferenceNumber(dataToValidate, validationResults);
+validateObjectsInArrayOnly(dataToValidate, validationResults);
+
+console.log(validationResults);
+```
+
+This example will output the validation errors found in `dataToValidate`. The `errors` array within `validationResults` will contain details of each error, including the path where the error was found, a message describing the error, and the method that detected the error.
+
 
 ---
 
