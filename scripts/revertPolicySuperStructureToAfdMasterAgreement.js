@@ -11,6 +11,23 @@ function revertPolicySuperStructureToAfdMasterAgreement(source) {
         maMap[ma.refKey] = ma;
     });
 
+    // Identify orphan policies
+    let orphanPolicies = source.policy.filter(p => !p.masterAgreementRef || !p.masterAgreementRef.length);
+
+    // Create new masterAgreements for orphan policies
+    let newMaIndex = 1;
+    orphanPolicies.forEach(orphanPolicy => {
+        let newMaRefKey = "NewMA" + newMaIndex;
+        let newMa = {
+            refKey: newMaRefKey,
+            policy: [orphanPolicy],
+            entityType: "undefined"
+        };
+        source.masterAgreement.push(newMa);
+        orphanPolicy.masterAgreementRef = [newMaRefKey];
+        newMaIndex++;
+    });
+
     // Move each policy back to its respective masterAgreement
     source.policy.forEach(p => {
         let maRef = p.masterAgreementRef[0];
@@ -28,9 +45,7 @@ function revertPolicySuperStructureToAfdMasterAgreement(source) {
         delete ma.policyRef;
     });
 
-    // If there were parties associated with masterAgreements, you can re-associate them similarly. 
-    // For now, I'm assuming the parties at the root belong to all masterAgreements.
-    // If there's a more specific logic to associate parties, please specify.
+    // Handle parties
     if (source.party) {
         source.masterAgreement.forEach(ma => {
             ma.party = [...source.party];

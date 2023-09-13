@@ -65,6 +65,7 @@ validateAfdRefKey(data, validationResults);
 
 The above example will report errors for the missing `refKey` and the duplicate `refKey`.
 
+
 ---
 
 ### `getValueFromPath(data, path)`
@@ -127,6 +128,72 @@ The above example will report an error because the user "Jane" has a reference t
 These methods together form a robust system for validating and ensuring the integrity of nested data structures with `refKey` references.
 The referencing key property must conform with the logic ```{object-name}Ref```. E.g., ```group``` reference in ```user```, will be ```groupRef```.
 
+
+---
+
+
+### `validateProcessingCodeAndInternalReferenceNumber(obj, validationResults, path='')`
+
+This function validates the `processingCode` and `internalReferenceNumber` properties of objects within the given `obj`.
+
+#### Parameters:
+
+- `obj`: The object to validate.
+- `validationResults`: The results object where errors will be appended. This should be an object with an `errors` array property.
+- `path` (optional): A string representing the current path within the object. This is mainly for internal use and typically starts empty.
+
+#### Description:
+
+For each object within `obj`, if the `processingCode` property is present and its value is one of ["1", "2", "3", "4"], then the object must also have an `internalReferenceNumber` property with a valid value (not empty, not null).
+
+Any validation issues found will be appended to the `errors` array within the `validationResults` object.
+
+
+### `validateObjectsInArrayOnly(obj, validationResults, path='')`
+
+This function ensures that all objects within the given `obj` are contained within arrays.
+
+#### Parameters:
+
+- `obj`: The object to validate.
+- `validationResults`: The results object where errors will be appended. This should be an object with an `errors` array property.
+- `path` (optional): A string representing the current path within the object. This is mainly for internal use and typically starts empty.
+
+#### Description:
+
+For each property within `obj`, if the property's value is an object (and not an array), then a validation error is appended to the `errors` array within the `validationResults` object. This enforces the rule that individual objects must be contained within arrays.
+
+
+### Usage Example:
+
+```javascript
+const dataToValidate = {
+    someArray: [
+        {
+            processingCode: "1",
+            internalReferenceNumber: "12345"
+        },
+        {
+            processingCode: "2"
+            // Missing internalReferenceNumber
+        }
+    ],
+    someObject: {}  // This will trigger a validation error
+};
+
+const validationResults = {
+    errors: []
+};
+
+validateProcessingCodeAndInternalReferenceNumber(dataToValidate, validationResults);
+validateObjectsInArrayOnly(dataToValidate, validationResults);
+
+console.log(validationResults);
+```
+
+This example will output the validation errors found in `dataToValidate`. The `errors` array within `validationResults` will contain details of each error, including the path where the error was found, a message describing the error, and the method that detected the error.
+
+
 ---
 
 ## `transformAfdMasterAgreementToPolicySuperStructure` Function
@@ -151,38 +218,147 @@ The `transformAfdMasterAgreementToPolicySuperStructure` function transforms a so
 - **Object**: The transformed source object with policies and parties (if any) at the root level.
 ---
 
-## `revertPolicySuperStructureToAfdMasterAgreement` Function
+## `revertPolicySuperStructureToAfdMasterAgreement` Function Documentation
 
-The `revertPolicySuperStructureToAfdMasterAgreement` function reverts the changes made by transforming a source object into a policy superstructure. It moves the policies and parties from the root level back to their respective master agreements.
+### Description
+The `revertPolicySuperStructureToAfdMasterAgreement` function transforms a "Policy Super Structure" back to the original "AFD Master Agreement" structure. Additionally, it identifies and handles orphan policies that are not associated with any `masterAgreement` by creating a new `masterAgreement` for each of them.
 
 ### Parameters
+- **source** (`Object`): The source object containing the policy super structure which includes `masterAgreement`, `policy`, and `party`.
 
-- **source** (Object): The source object containing policies and master agreements at the root level.
+### Returns
+- **Object**: The transformed object in the "AFD Master Agreement" format.
 
-### Steps:
+### Function Steps
+1. **Validation Check**: If the source does not contain `policy` or `masterAgreement`, it logs an error message to the console and returns the source unchanged.
+2. **Mapping Master Agreements**: Creates a mapping (`maMap`) between the `refKey` of each `masterAgreement` and the `masterAgreement` itself for quick look-up.
+3. **Identify Orphan Policies**: Finds any policies in the `policy` array that do not have a `masterAgreementRef`.
+4. **Handle Orphan Policies**: For each orphan policy:
+    - Creates a new `masterAgreement` with a unique `refKey`.
+    - Assigns the orphan policy to this new `masterAgreement`.
+    - Sets the `entityType` of this new `masterAgreement` to "undefined".
+5. **Re-associate Policies**: Moves each policy back to its respective `masterAgreement` using the `masterAgreementRef`.
+6. **Clean Up**: Removes the `policyRef` from each `masterAgreement` and the `masterAgreementRef` from each policy.
+7. **Handle Parties**: If the source contains parties at the root level, it assigns these parties to each `masterAgreement`.
 
-1. **Initial Checks**: The function first checks if the `policy` and `masterAgreement` properties exist in the source. If not, it logs an error and returns the source object without modifications.
-2. **Create Master Agreement Map**: A map is created for quick lookup of master agreements using their `refKey`.
-3. **Re-associate Policies**: Each policy at the root level is moved back to its associated master agreement based on the `masterAgreementRef`. The reference (`masterAgreementRef`) is then removed from the policy.
-4. **Clean Up**: The `policy` property at the root is deleted after all policies have been moved. Additionally, the `policyRef` property in each master agreement is removed.
-5. **Re-associate Parties**: If there are parties at the root level, they are associated with all master agreements (assuming they belong to all). The `party` property at the root is then deleted.
-
-### Returns:
-
-- **Object**: The reverted source object with policies and parties (if any) re-associated with their respective master agreements.
-
-### Example Usage:
-
-```javascript
-const source = {
-    policy: [...],
-    masterAgreement: [...],
-    party: [...]
-};
-
-const revertedSource = revertPolicySuperStructureToAfdMasterAgreement(source);
+### Example
+**Input**:
+```json
+{
+    "masterAgreement": [
+        {
+            "refKey": "MA1",
+            "policyRef": ["P1"]
+        },
+        {
+            "refKey": "MA2",
+            "policyRef": ["P3"]
+        }
+    ],
+    "policy": [
+        {
+            "refKey": "P1",
+            "details": "Policy 1 details",
+            "masterAgreementRef": ["MA1"]
+        },
+        {
+            "refKey": "P2",
+            "details": "Policy 2 details"
+        },
+        {
+            "refKey": "P3",
+            "details": "Policy 3 details",
+            "masterAgreementRef": ["MA2"]
+        }
+    ],
+    "party": [
+        {
+            "name": "RootParty"
+        },
+        {
+            "name": "PartyA"
+        },
+        {
+            "name": "PartyB"
+        }
+    ]
+}
 ```
 
+**Output**:
+```json
+{
+    "masterAgreement": [
+        {
+            "refKey": "MA1",
+            "policy": [
+                {
+                    "refKey": "P1",
+                    "details": "Policy 1 details"
+                }
+            ],
+            "party": [
+                {
+                    "name": "RootParty"
+                },
+                {
+                    "name": "PartyA"
+                },
+                {
+                    "name": "PartyB"
+                }
+            ]
+        },
+        {
+            "refKey": "MA2",
+            "policy": [
+                {
+                    "refKey": "P3",
+                    "details": "Policy 3 details"
+                }
+            ],
+            "party": [
+                {
+                    "name": "RootParty"
+                },
+                {
+                    "name": "PartyA"
+                },
+                {
+                    "name": "PartyB"
+                }
+            ]
+        },
+        {
+            "refKey": "NewMA1",
+            "policy": [
+                {
+                    "refKey": "P2",
+                    "details": "Policy 2 details"
+                }
+            ],
+            "entityType": "undefined",
+            "party": [
+                {
+                    "name": "RootParty"
+                },
+                {
+                    "name": "PartyA"
+                },
+                {
+                    "name": "PartyB"
+                }
+            ]
+        }
+    ]
+}
+```
+
+In the provided example, the function identifies `P2` as an orphan policy, creates a new `masterAgreement` (`NewMA1`) for it, and associates it with all root parties. The `entityType` for this new `masterAgreement` is set to "undefined". Other policies are nested within their respective `masterAgreements` based on their `masterAgreementRef`.
+
+---
+
+---
 ## `transform-afdMasterAgreement-to-policySuperStructure-jLio-script` JLio Script
 
 The `transform-afdMasterAgreement-to-policySuperStructure-jLio-script` transforms a source json object that contains master agreements into a super structure where policies are moved to the root of the source object.
