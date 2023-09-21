@@ -4,15 +4,15 @@ const validationResults = {
 };
 
 
-function validateAfdRefKey(obj, validationResults, path='') {
+function validateAfdRefKey(obj, validationResults, path = '') {
     const refKeyMap = new Map();
 
     if (Array.isArray(obj)) {
         let anyRefKeyPresent = obj.some(item => item.hasOwnProperty('refKey'));
 
         obj.forEach((item, i) => {
-            const currentPath = `${path}[${i}]`;
-            
+            const currentPath = path + '[' + i + ']';
+
             if (anyRefKeyPresent) {
                 if (!item.hasOwnProperty('refKey')) {
                     validationResults.errors.push({
@@ -30,7 +30,7 @@ function validateAfdRefKey(obj, validationResults, path='') {
                     const conflictingPath = refKeyMap.get(item.refKey);
                     validationResults.errors.push({
                         path: currentPath,
-                        message: `refKey must be unique within the array. Conflicts with ${conflictingPath}`,
+                        message: 'refKey must be unique within the array. Conflicts with ' + conflictingPath,
                         method: 'uniqueRefKey',
                     });
                 } else {
@@ -40,13 +40,13 @@ function validateAfdRefKey(obj, validationResults, path='') {
 
             // Recursively check child properties
             for (const key in item) {
-                validateAfdRefKey(item[key], validationResults, `${currentPath}.${key}`);
+                validateAfdRefKey(item[key], validationResults, currentPath + '.' + key);
             }
         });
     } else if (typeof obj === 'object' && obj !== null) {
         // If it's an object (but not an array), recursively check its properties
         for (const key in obj) {
-            validateAfdRefKey(obj[key], validationResults, `${path}.${key}`);
+            validateAfdRefKey(obj[key], validationResults, path + '.' + key);
         }
     }
 }
@@ -82,10 +82,10 @@ function validateAfdReferences(data, fromPath, toPath, validationResults) {
 
     // Extract the refKey from the target scope
     const targetRefKeys = new Set(toArray.map(item => item.refKey));
-    const refProperty = `${toPath.split('.').pop()}Ref`; // Construct the reference property name from the last segment of the toPath
+    const refProperty = toPath.split('.').pop() + 'Ref'; // Construct the reference property name from the last segment of the toPath
 
     if (fromArray.length > 0 && !fromArray[0].hasOwnProperty(refProperty)) {
-        throw new Error(`The reference property '${refProperty}' does not exist in the fromPath data.`);
+        throw new Error('The reference property ' + refProperty + ' does not exist in the fromPath data.');
     }
 
     // Iterate over the source scope to validate references
@@ -94,8 +94,8 @@ function validateAfdReferences(data, fromPath, toPath, validationResults) {
             item[refProperty].forEach(ref => {
                 if (!targetRefKeys.has(ref)) {
                     validationResults.errors.push({
-                        path: `${fromPath}[${i}].${refProperty}`,
-                        message: `Reference ${ref} not found in ${toPath} refKeys`,
+                        path: fromPath + '[' + i + '].' + refProperty,
+                        message: 'Reference ' + ref + ' not found in ' + toPath + ' refKeys',
                         method: 'missingRef'
                     });
                 }
@@ -107,7 +107,7 @@ function validateAfdReferences(data, fromPath, toPath, validationResults) {
 
 
 
-function validateProcessingCodeAndInternalReferenceNumber(obj, validationResults, path='') {
+function validateProcessingCodeAndInternalReferenceNumber(obj, validationResults, path = '') {
     if (typeof obj === 'object' && obj !== null) {
         if (obj.hasOwnProperty('processingCode')) {
             const validCodes = ["0", "1", "2", "3", "4"];
@@ -124,16 +124,16 @@ function validateProcessingCodeAndInternalReferenceNumber(obj, validationResults
 
         // Continue checking child properties
         for (const key in obj) {
-            validateProcessingCodeAndInternalReferenceNumber(obj[key], validationResults, `${path}.${key}`);
+            validateProcessingCodeAndInternalReferenceNumber(obj[key], validationResults, path + '.' + key);
         }
     } else if (Array.isArray(obj)) {
         obj.forEach((item, i) => {
-            validateProcessingCodeAndInternalReferenceNumber(item, validationResults, `${path}[${i}]`);
+            validateProcessingCodeAndInternalReferenceNumber(item, validationResults, path + '[' + i + ']');
         });
     }
 }
 
-function validateObjectsInArrayOnly(obj, validationResults, path='', parentIsArray=false) {
+function validateObjectsInArrayOnly(obj, validationResults, path = '', parentIsArray = false) {
     if (typeof obj === 'object' && obj !== null) {
         const isCurrentArray = Array.isArray(obj);
 
@@ -148,7 +148,7 @@ function validateObjectsInArrayOnly(obj, validationResults, path='', parentIsArr
 
         // Iterate through properties of the object
         for (const key in obj) {
-            const currentPath = path ? `${path}.${key}` : key;
+            const currentPath = path ? path + '.' + key : key;
             validateObjectsInArrayOnly(obj[key], validationResults, currentPath, isCurrentArray);
         }
     }
