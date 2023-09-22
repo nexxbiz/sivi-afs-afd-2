@@ -2,7 +2,7 @@
   {
     "path": "$.source.masterAgreement[*].policy[*].masterAgreementRef",
     "value": [],
-    "command": "set"
+    "command": "add"
   },
   {
     "fromPath": "$.source.masterAgreement[*].refKey",
